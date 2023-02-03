@@ -27,12 +27,10 @@ class RouteMatchService
      *
      * @return bool
      */
-    public function ruleExistsForPath($url): bool
+    public function ruleExistsForRoute($url): bool
     {
-        // trim api/ prefix
-        $url = substr($url, 3);
-
         $paths = $this->workflowRepository->getPaths();
+
         foreach ($paths as $path) {
             $match = $this->workflowRepository->matchUrl($url, $path);
             if ($match) return true;

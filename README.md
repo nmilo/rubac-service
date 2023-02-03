@@ -36,7 +36,8 @@ RubacValidatorService is the core service, responsible for validating workflows 
 Core method ```validate(User $user, BaseRequest $request)``` with takes User and Request objects.
 
 ## RUBAC Middleware
-Laravel Middleware that uses RUBAC Service and either allows request to continiue or returns an error message.
+Laravel Middleware that uses RUBAC Service and either allows request to continue or returns an error message.
+To enable that middleware on route add ```rubac``` to middleware group.
 
 ## Security of expression evaluation
 

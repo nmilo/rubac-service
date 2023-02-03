@@ -11,11 +11,19 @@ use Illuminate\Support\Arr;
  */
 class WorkflowRepository implements WorkflowRepositoryInterface {
 
+    /**
+     * Get all workflows
+     */
     public function getWorkflows()
     {
         return config('workflows');
     }
 
+    /**
+     * Get workflows for given path
+     *
+     * @param string $path
+     */
     public function getWorkflowsForPath(string $path)
     {
         $workflows = $this->getWorkflows();
@@ -28,7 +36,7 @@ class WorkflowRepository implements WorkflowRepositoryInterface {
     }
 
     /**
-     *
+     * Get array of routes that have defined rules
      */
     public function getPaths()
     {

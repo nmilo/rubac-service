@@ -39,7 +39,8 @@ class RUBACMiddleware
      */
     public function handle(BaseRequest $request, Closure $next)
     {
-        if ($this->routeMatchService->ruleExistsForPath($request->getPath())){
+        $path = substr($request->getPath(), 3);
+        if ($this->routeMatchService->ruleExistsForRoute($path)){
 
             if (!$this->passesRules($request)) {
                 return response()->json([
