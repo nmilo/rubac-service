@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Http\Requests\BaseRequest;
 use App\Models\User;
-use App\Repositories\WorkflowRepository;
 
 /**
  * Service responsible for validating rubac rules
@@ -12,21 +11,15 @@ use App\Repositories\WorkflowRepository;
 class RubacValidatorService
 {
     /**
-     * @var WorkflowRepository $workflowRepository
-     */
-    protected $workflowRepository;
-
-    /**
      * @var ExpressionEvaluator $expressionEvaluator
      */
     protected ExpressionEvaluator $expressionEvaluator;
 
     /**
-     * @param WorkflowRepository $workflowRepository
+     * @param ExpressionEvaluator $expressionEvaluator
      */
-    public function __construct(WorkflowRepository $workflowRepository, ExpressionEvaluator $expressionEvaluator)
+    public function __construct(ExpressionEvaluator $expressionEvaluator)
     {
-        $this->workflowRepository = $workflowRepository;
         $this->expressionEvaluator = $expressionEvaluator;
     }
 
@@ -74,14 +67,14 @@ class RubacValidatorService
      *
      * @param User $user
      * @param BaseRequest $request
+     * @param Workflows $workflows
      *
      * @return bool
      */
-    public function validate(User $user, BaseRequest $request): bool
+    public function validate(User $user, BaseRequest $request, $workflows): bool
     {
         $this->setBaseParams($user, $request);
 
-        $workflows = $this->workflowRepository->getWorkflowsForPath(substr($request->getPath(), 3));
         foreach ($workflows as $workflow) {
             $validated = $this->validateWorkflow($workflow);
 

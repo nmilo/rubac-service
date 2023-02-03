@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Http\Requests\BaseRequest;
+use App\Repositories\WorkflowRepository;
 use App\Services\RouteMatchService;
 use App\Services\RubacValidatorService;
 use Closure;
@@ -11,23 +12,23 @@ use Illuminate\Http\Response;
 class RUBACMiddleware
 {
     /**
-     * @var RouteMatchService $routeMatchService
-     */
-    protected $routeMatchService;
-
-    /**
      * @var RubacValidatorService $rubacValidatorService
      */
     protected $rubacValidatorService;
 
     /**
-     * @param RouteMatchService $routeMatchService
-     * @param RubacValidatorService $rubacValidatorService
+     * @var WorkflowRepository $workflowRepository
      */
-    public function __construct(RouteMatchService $routeMatchService, RubacValidatorService $rubacValidatorService)
+    protected $workflowRepository;
+
+    /**
+     * @param RouteMatchService $rubacValidatorService
+     * @param WorkflowRepository $workflowRepository
+     */
+    public function __construct(RubacValidatorService $rubacValidatorService, WorkflowRepository $workflowRepository)
     {
-        $this->routeMatchService = $routeMatchService;
         $this->rubacValidatorService = $rubacValidatorService;
+        $this->workflowRepository = $workflowRepository;
     }
 
     /**
@@ -39,14 +40,15 @@ class RUBACMiddleware
      */
     public function handle(BaseRequest $request, Closure $next)
     {
+        // Remove api prefix
         $path = substr($request->getPath(), 3);
-        if ($this->routeMatchService->ruleExistsForRoute($path)){
 
-            if (!$this->passesRules($request)) {
-                return response()->json([
-                    'access_granted' => false,
-                ], Response::HTTP_UNAUTHORIZED);
-            }
+        $workflowsForPath = $this->workflowRepository->getWorkflowsForPath($path);
+
+        if ($workflowsForPath && !$this->accessGranted($request, $workflowsForPath)) {
+            return response()->json([
+                'access_granted' => false,
+            ], Response::HTTP_UNAUTHORIZED);
         }
 
         return $next($request);
@@ -57,8 +59,8 @@ class RUBACMiddleware
      *
      * @return bool
      */
-    protected function passesRules(BaseRequest $request): bool
+    protected function accessGranted(BaseRequest $request, $workflows): bool
     {
-        return $this->rubacValidatorService->validate($request->user(), $request);
+        return $this->rubacValidatorService->validate($request->user(), $request, $workflows);
     }
 }

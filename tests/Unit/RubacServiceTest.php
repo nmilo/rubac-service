@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use App\Repositories\WorkflowRepository;
 use App\Services\ExpressionEvaluator;
 use App\Services\RubacValidatorService;
 use PHPUnit\Framework\TestCase;
@@ -15,7 +14,7 @@ class RubacServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new RubacValidatorService(new WorkflowRepository(), new ExpressionEvaluator());
+        $this->service = new RubacValidatorService(new ExpressionEvaluator());
     }
 
     /** @test */

@@ -1,4 +1,4 @@
-# RUBAC Service
+# RuBAC Service
 Rule based acccess control service
 
 ## Set up and running
@@ -18,8 +18,8 @@ DB_PASSWORD=password
 3. Start Docker containers ```docker-compose up -d```
 4. Install composer packages ```docker exec rubac-app composer install```
 5. Generate application key ```docker exec rubac-app php artisan key:generate```
-6. Run migrations and seed database ```docker exec rubac-app php artisan migrate```
-```docker exec rubac-app php artisan db:seed```
+6. Run migrations ```docker exec rubac-app php artisan migrate```
+7. Seed the database ```docker exec rubac-app php artisan db:seed```
 
 Application is running on http://localhost:8000
 
