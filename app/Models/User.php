@@ -48,4 +48,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+
+    /**
+     * @return string
+     */
+    function getRole(): string
+    {
+        return $this->role->slug;
+    }
 }
