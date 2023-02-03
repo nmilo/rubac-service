@@ -44,4 +44,4 @@ The eval() language construct is very dangerous because it allows execution of a
 Which is major security flow on its own. However workflow configuration is stored in code base it self, without user provided inputs.
 
 ## Tests
-Run tests ```php artisan test```
+Run tests with ```php artisan test```

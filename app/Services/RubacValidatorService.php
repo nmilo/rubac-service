@@ -5,48 +5,29 @@ namespace App\Services;
 use App\Http\Requests\BaseRequest;
 use App\Models\User;
 use App\Repositories\WorkflowRepository;
-use App\Traits\ExpressionHelpers;
 
 /**
  * Service responsible for validating rubac rules
  */
 class RubacValidatorService
 {
-    use ExpressionHelpers;
-
     /**
      * @var WorkflowRepository $workflowRepository
      */
     protected $workflowRepository;
 
     /**
-     * @var User $user
+     * @var ExpressionEvaluator $expressionEvaluator
      */
-    protected User $user;
-
-    /**
-     * @var BaseRequest $request
-     */
-    protected BaseRequest $request;
-
-    /**
-     * @var string $requestUrl
-     */
-    protected string $requestUrl;
-
-    /**
-     * Params populated from workflow definition
-     *
-     * @var array $params
-     */
-    protected $params = [];
+    protected ExpressionEvaluator $expressionEvaluator;
 
     /**
      * @param WorkflowRepository $workflowRepository
      */
-    public function __construct(WorkflowRepository $workflowRepository)
+    public function __construct(WorkflowRepository $workflowRepository, ExpressionEvaluator $expressionEvaluator)
     {
         $this->workflowRepository = $workflowRepository;
+        $this->expressionEvaluator = $expressionEvaluator;
     }
 
     /**
@@ -55,9 +36,18 @@ class RubacValidatorService
      */
     public function setBaseParams(User $user, BaseRequest $request)
     {
-        $this->user = $user;
-        $this->request = $request;
-        $this->requestUrl = substr($request->getPath(), 3);
+        $params = [
+            [
+                'name' => 'user',
+                'value' => $user
+            ],
+            [
+                'name' => 'request',
+                'value' => $request
+            ]
+        ];
+
+        $this->expressionEvaluator->setParams($params);
     }
 
     /**
@@ -65,11 +55,18 @@ class RubacValidatorService
      *
      * @param array $params
      */
-    public function setWorkflowParams(array $params)
+    public function setWorkflowParams(array $workflowParams)
     {
-        foreach ($params as $param) {
-            $this->params[$param['Name']] = $this->evalExpression($this->parseParamExpression($param['Expression']));
+        $params = [];
+        foreach ($workflowParams as $param) {
+
+            $params[] = [
+                'name' => $param['Name'],
+                'value' => $this->expressionEvaluator->evaluate($param['Expression'])
+            ];
         }
+
+        $this->expressionEvaluator->setParams($params);
     }
 
     /**
@@ -83,8 +80,8 @@ class RubacValidatorService
     public function validate(User $user, BaseRequest $request): bool
     {
         $this->setBaseParams($user, $request);
-        $workflows = $this->workflowRepository->getWorkflowsForPath($this->requestUrl);
 
+        $workflows = $this->workflowRepository->getWorkflowsForPath(substr($request->getPath(), 3));
         foreach ($workflows as $workflow) {
             $validated = $this->validateWorkflow($workflow);
 
@@ -92,32 +89,6 @@ class RubacValidatorService
         }
 
         return true;
-    }
-
-    public function evalExpression($expression)
-    {
-        return eval("return $expression");
-    }
-
-    public function replaceParamVariables($expression)
-    {
-        // Regex to match variables
-        preg_match('/\$[a-zA-z0-9-_]*\b/', $expression, $variables);
-        foreach ($variables as $variable)
-        {
-            $variableName = substr($variable, 1);
-            $expression = str_replace($variable, "\$this->params['$variableName']", $expression);
-        }
-
-        return $expression;
-    }
-
-    public function parseParamExpression($expression)
-    {
-        $expression = str_replace('$', '$this->', $expression);
-        $expression = str_replace('.', '->', $expression).'();';
-
-        return $expression;
     }
 
     /**
@@ -145,8 +116,6 @@ class RubacValidatorService
      */
     public function validateRule(array $rule): bool
     {
-        $expression = $this->replaceParamVariables($rule['Expression']);
-
-        return eval("return ($expression);");
+        return $this->expressionEvaluator->evaluate($rule['Expression']);
     }
 }

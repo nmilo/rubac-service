@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Repositories\WorkflowRepository;
+use App\Services\ExpressionEvaluator;
 use App\Services\RubacValidatorService;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +15,7 @@ class RubacServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new RubacValidatorService(new WorkflowRepository());
+        $this->service = new RubacValidatorService(new WorkflowRepository(), new ExpressionEvaluator());
     }
 
     /** @test */
@@ -40,33 +41,6 @@ class RubacServiceTest extends TestCase
     }
 
     /** @test */
-    public function it_parses_param_expression()
-    {
-        $expression = '$user.getRole';
-        $expectedExpression = '$this->user->getRole();';
-
-        $this->assertEquals($this->service->parseParamExpression($expression), $expectedExpression);
-    }
-
-    /** @test */
-    public function it_evaluates_expression()
-    {
-        $expression = '1+2;';
-        $expectedResult = '3';
-
-        $this->assertEquals($this->service->evalExpression($expression), $expectedResult);
-    }
-
-    /** @test */
-    public function it_replaces_param_variables()
-    {
-        $expression = '$user_role == "ADMIN"';
-        $expectedExpression = '$this->params[\'user_role\'] == "ADMIN"';
-
-        $this->assertEquals($this->service->replaceParamVariables($expression), $expectedExpression);
-    }
-
-    /** @test */
     public function it_validates_false_workflow()
     {
 
@@ -74,12 +48,7 @@ class RubacServiceTest extends TestCase
             "WorkflowID" => 1,
             "WorkflowName" => "Test Workflow",
             "Path" => "/test",
-            "Params" => [
-                [
-                    "Name" => "test_var",
-                    "Expression" => 'array'
-                ]
-            ],
+            "Params" => [],
             "Rules" => [
                 [
                     "RuleName" => "Rule that passes",
@@ -92,7 +61,6 @@ class RubacServiceTest extends TestCase
             ]
         ];
 
-
         $this->assertFalse($this->service->validateWorkflow($workflow));
     }
 
@@ -104,12 +72,7 @@ class RubacServiceTest extends TestCase
             "WorkflowID" => 1,
             "WorkflowName" => "Test Workflow",
             "Path" => "/test",
-            "Params" => [
-                [
-                    "Name" => "test_var",
-                    "Expression" => 'array'
-                ]
-            ],
+            "Params" => [],
             "Rules" => [
                 [
                     "RuleName" => "Rule that passes",
@@ -121,7 +84,6 @@ class RubacServiceTest extends TestCase
                 ],
             ]
         ];
-
 
         $this->assertTrue($this->service->validateWorkflow($workflow));
     }

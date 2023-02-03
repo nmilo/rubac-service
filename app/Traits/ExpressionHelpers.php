@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 /**
- * Functions used in rule's expressions
+ * Set of helper functions used in expressions
  */
 trait ExpressionHelpers {
 
@@ -13,7 +13,7 @@ trait ExpressionHelpers {
      *
      * @return bool
      */
-    function in(string $role, string ...$roles): bool
+    public function in(string $role, string ...$roles): bool
     {
         for ($i = 0; $i < count($roles); $i++) {
             if( $role === $roles[$i]) return true;
@@ -28,7 +28,7 @@ trait ExpressionHelpers {
      * @param  string $range IP/CIDR netmask eg. 127.0.0.0/24, also 127.0.0.1 is accepted and /32 assumed
      * @return boolean true if the ip is in this range / false if not.
      */
-    function ip_range($ip, $range): bool
+    public function ip_range($ip, $range): bool
     {
         if ( strpos( $range, '/' ) == false ) {
             $range .= '/32';
