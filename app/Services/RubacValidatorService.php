@@ -7,7 +7,10 @@ use App\Models\User;
 use App\Repositories\WorkflowRepository;
 use App\Traits\ExpressionHelpers;
 
-class RuleValidatorService
+/**
+ * Service responsible for validating rubac rules
+ */
+class RubacValidatorService
 {
     use ExpressionHelpers;
 
@@ -27,12 +30,12 @@ class RuleValidatorService
     protected BaseRequest $request;
 
     /**
-     * @var $path
+     * @var string $requestUrl
      */
     protected string $requestUrl;
 
     /**
-     * Params populated from workflow
+     * Params populated from workflow definition
      *
      * @var array $params
      */
@@ -62,7 +65,8 @@ class RuleValidatorService
      *
      * @param array $params
      */
-    public function setParams(array $params){
+    public function setWorkflowParams(array $params)
+    {
         foreach ($params as $param) {
             $this->params[$param['Name']] = $this->evalExpression($this->parseParamExpression($param['Expression']));
         }
@@ -97,8 +101,9 @@ class RuleValidatorService
 
     public function replaceParamVariables($expression)
     {
+        // Regex to match variables
         preg_match('/\$[a-zA-z0-9-_]*\b/', $expression, $variables);
-        foreach($variables as $variable)
+        foreach ($variables as $variable)
         {
             $variableName = substr($variable, 1);
             $expression = str_replace($variable, "\$this->params['$variableName']", $expression);
@@ -122,7 +127,7 @@ class RuleValidatorService
      */
     public function validateWorkflow($workflow): bool
     {
-        $this->setParams($workflow['Params']);
+        $this->setWorkflowParams($workflow['Params']);
 
         foreach ($workflow['Rules'] as $rule) {
             $validated = $this->validateRule($rule);

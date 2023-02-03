@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Http\Requests\BaseRequest;
 use App\Services\RouteMatchService;
-use App\Services\RuleValidatorService;
+use App\Services\RubacValidatorService;
 use Closure;
 use Illuminate\Http\Response;
 
@@ -16,18 +16,18 @@ class RUBACMiddleware
     protected $routeMatchService;
 
     /**
-     * @var RuleValidatorService $ruleValidatorService
+     * @var RubacValidatorService $rubacValidatorService
      */
-    protected $ruleValidatorService;
+    protected $rubacValidatorService;
 
     /**
      * @param RouteMatchService $routeMatchService
-     * @param RuleValidatorService $ruleValidatorService
+     * @param RubacValidatorService $rubacValidatorService
      */
-    public function __construct(RouteMatchService $routeMatchService, RuleValidatorService $ruleValidatorService)
+    public function __construct(RouteMatchService $routeMatchService, RubacValidatorService $rubacValidatorService)
     {
         $this->routeMatchService = $routeMatchService;
-        $this->ruleValidatorService = $ruleValidatorService;
+        $this->rubacValidatorService = $rubacValidatorService;
     }
 
     /**
@@ -58,6 +58,6 @@ class RUBACMiddleware
      */
     protected function passesRules(BaseRequest $request): bool
     {
-        return $this->ruleValidatorService->validate($request->user(), $request);
+        return $this->rubacValidatorService->validate($request->user(), $request);
     }
 }

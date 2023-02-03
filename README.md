@@ -32,7 +32,8 @@ Leverage config caching for faster read speeds.
 Run command ```php artisan cache:config``` inside Docker container.
 
 ## RUBAC Service
-RuleValidatorService is the core service, responsible for validating workflows and access control rules.
+RubacValidatorService is the core service, responsible for validating workflows and access control rules.
+Core method ```validate(User $user, BaseRequest $request)``` with takes User and Request objects.
 
 ## RUBAC Middleware
 Laravel Middleware that uses RUBAC Service and either allows request to continiue or returns an error message.
