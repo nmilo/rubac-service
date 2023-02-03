@@ -2,13 +2,14 @@
 
 namespace App\Repositories;
 
+use App\Interfaces\WorkflowRepositoryInterface;
 use Illuminate\Support\Arr;
 
 /**
  * Class responsible for fetching workflows.
  * Currently workflows are stored in config file, however that can be replaced with another storage driver in future
  */
-class WorkflowRepository {
+class WorkflowRepository implements WorkflowRepositoryInterface {
 
     public function getWorkflows()
     {
