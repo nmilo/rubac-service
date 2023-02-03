@@ -21,7 +21,6 @@ class RouteMatchService
         $this->workflowRepository = $workflowRepository;
     }
 
-
     /**
      * Check if workflow rule exists for given path
      * @param $url
@@ -35,27 +34,8 @@ class RouteMatchService
 
         $paths = $this->workflowRepository->getPaths();
         foreach ($paths as $path) {
-            $match = $this->matchUrl($url, $path);
+            $match = $this->workflowRepository->matchUrl($url, $path);
             if ($match) return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Match url with rule path
-     * @param $url Url to check
-     * @param $rulePath Url of given rule
-     *
-     * @return bool
-     */
-    public function matchUrl($url, $rulePath): bool
-    {
-        $pattern = preg_quote($rulePath, '/');
-        $pattern = str_replace('\*', '.*', $pattern);
-        $matched = preg_match('/^' . $pattern . '$/i', $url);
-        if ($matched > 0) {
-            return true;
         }
 
         return false;

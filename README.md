@@ -42,3 +42,6 @@ Laravel Middleware that uses RUBAC Service and either allows request to continiu
 
 The eval() language construct is very dangerous because it allows execution of arbitrary PHP code.
 Which is major security flow on its own. However workflow configuration is stored in code base it self, without user provided inputs.
+
+## Tests
+Run tests ```php artisan test```
