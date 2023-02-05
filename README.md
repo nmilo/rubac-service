@@ -39,6 +39,11 @@ Core method ```validate(User $user, BaseRequest $request, $workflows)``` with ta
 Laravel Middleware that uses RUBAC Service and either allows request to continue or returns an error message.
 To enable that middleware on route add ```rubac``` to middleware group.
 
+## Expression Evaluator
+
+Implementation of Interpreter Design Pattern. This class is responsible for parsing and evaluating expressions.
+As well as managing local parameters as defined in rule definition.
+
 ## Default users and manual testing
 By default there are two users in database, super_admin@example.com and admin@example.com that have associated roles.
 You can login with post request to api/login, with email and password. Default password is password. You will get an API token, which you can later use for other requests. Token is used as Authorization header.
