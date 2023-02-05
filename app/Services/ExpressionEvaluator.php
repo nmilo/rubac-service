@@ -18,6 +18,7 @@ class ExpressionEvaluator
 
     /**
      * Populate variables array with given params
+     *
      * @param array $params
      */
     public function setParams(array $params)
@@ -43,6 +44,11 @@ class ExpressionEvaluator
         return $expression;
     }
 
+    /**
+     * @param string $expression
+     *
+     * @return mixed
+     */
     public function evaluate(string $expression)
     {
         $expression = $this->parseExpression($expression);
@@ -68,6 +74,10 @@ class ExpressionEvaluator
         return $expression;
     }
 
+    /**
+     * @param string $expression
+     * @return string
+     */
     public function replaceDotNotation(string $expression): string
     {
         $matched = preg_match('/\$[a-zA-z0-9-_]*\.\b/i', $expression);
@@ -79,6 +89,10 @@ class ExpressionEvaluator
         return $expression;
     }
 
+    /**
+     * @param string $expression
+     * @return string
+     */
     public function prefixMethodsWithThis(string $expression): string
     {
         $matched = preg_match('/^[a-zA-z0-9-_]*\(/i', $expression);

@@ -26,18 +26,24 @@ Application is running on http://localhost:8000
 ## Workflow storage
 
 Workflows are stored in JSON format, as part of configuration file.
+However workflows can use another storage driver, by implementing WorkflowRepositoryInterface.
 
-Leverage config caching for faster read speeds.
-
-Run command ```php artisan cache:config``` inside Docker container.
+You can optionaly leverage config caching for faster read speeds.
+By running ```php artisan cache:config``` inside Docker container.
 
 ## RUBAC Service
 RubacValidatorService is the core service, responsible for validating workflows and access control rules.
-Core method ```validate(User $user, BaseRequest $request)``` with takes User and Request objects.
+Core method ```validate(User $user, BaseRequest $request, $workflows)``` with takes User, Request and Workflow objects.
 
 ## RUBAC Middleware
 Laravel Middleware that uses RUBAC Service and either allows request to continue or returns an error message.
 To enable that middleware on route add ```rubac``` to middleware group.
+
+## Default users and manual testing
+By default there are two users in database, super_admin@example.com and admin@example.com that have associated roles.
+You can login with post request to api/login, with email and password. Default password is password. You will get an API token, which you can later use for other requests. Token is used as Authorization header.
+
+Defined rotues /api/admin/settings and /api/admin/users can be used for rule testing.
 
 ## Security of expression evaluation
 
@@ -46,3 +52,5 @@ Which is major security flow on its own. However workflow configuration is store
 
 ## Tests
 Run tests with ```php artisan test```
+Tests RubacService, WorkflowRepository and ExpressionEvaluator
+

@@ -22,7 +22,7 @@ class LoginController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Login route.
      * @param LoginRequest $request
      *
      * @return \Illuminate\Http\Response
